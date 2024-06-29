@@ -85,7 +85,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       );
                       if (user != null) {
                         // Add user to Firestore
-                        await _firestore.collection('USERS').doc(user.uid).set({
+                        await _firestore.collection('users').doc(user.uid).set({
                           'name': _nameController.text,
                           'email': _emailController.text,
                           'userType': 'user',

@@ -5,18 +5,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Veterinarian {
   final String name;
-  final double latitude;
-  final double longitude;
+  final String town;
+  final String state;
 
   Veterinarian({
     required this.name,
-    required this.latitude,
-    required this.longitude,
+    required this.town,
+    required this.state,
   });
 }
 
 class ReservationPage extends StatefulWidget {
-  const ReservationPage({super.key});
+  const ReservationPage({Key? key}) : super(key: key);
 
   @override
   State<ReservationPage> createState() => _ReservationPageState();
@@ -55,45 +55,62 @@ class _ReservationPageState extends State<ReservationPage> {
 
   void addUserLocationMarker() async {
     osm.GeoPoint userLocation = await controller.myLocation();
-    controller.addMarker(userLocation,
-        markerIcon: osm.MarkerIcon(
-          icon: Icon(
-            Icons.location_on,
-            color: Colors.green,
-            size: 48,
-          ),
-        ));
+    controller.addMarker(
+      userLocation,
+      markerIcon: osm.MarkerIcon(
+        icon: Icon(
+          Icons.location_on,
+          color: Colors.green,
+          size: 48,
+        ),
+      ),
+    );
   }
 
   Future<void> loadVeterinarians() async {
-    List<Veterinarian> vets = await getVeterinarians();
-    setState(() {
-      veterinarians = vets;
-    });
-    for (var vet in veterinarians) {
-      controller.addMarker(
-        osm.GeoPoint(latitude: vet.latitude, longitude: vet.longitude),
-        markerIcon: osm.MarkerIcon(
-          icon: Icon(
-            Icons.local_hospital,
-            color: Colors.red,
-            size: 48,
-          ),
-        ),
-      );
+    try {
+      List<Veterinarian> vets = await getVeterinarians();
+      setState(() {
+        veterinarians = vets;
+      });
+      for (var vet in veterinarians) {
+        if (vet.latitude != null && vet.longitude != null) {
+          // تحويل اسم البلدة والولاية إلى تسمية مخصصة للماركر
+          String markerLabel = '${vet.town}, ${vet.state}';
+
+          controller.addMarker(
+            osm.GeoPoint(latitude: vet.latitude!, longitude: vet.longitude!),
+            markerIcon: osm.MarkerIcon(
+              icon: Icon(
+                Icons.local_hospital,
+                color: Colors.red,
+                size: 48,
+              ),
+            ),
+            markerInfo: osm.MarkerInfo(
+              title: vet.name,
+              snippet: markerLabel,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error loading veterinarians: $e');
     }
   }
 
   Future<List<Veterinarian>> getVeterinarians() async {
     List<Veterinarian> vets = [];
     QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('veterinaire').get();
+        await FirebaseFirestore.instance.collection('veterinarian').get();
     snapshot.docs.forEach((doc) {
-      vets.add(Veterinarian(
-        name: doc['name'],
-        latitude: doc['latitude'],
-        longitude: doc['longitude'],
-      ));
+      if (doc.exists) {
+        vets.add(Veterinarian(
+          name: doc['name'],
+          town: doc['town'],
+          state: doc['state'],
+        ));
+      }
     });
     return vets;
   }
