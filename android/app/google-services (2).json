@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "246390809487",
+    "project_id": "alifi-app",
+    "storage_bucket": "alifi-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246390809487:android:75ad1a95b5c9c88cf721fa",
+        "android_client_info": {
+          "package_name": "com.example.alifi_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXhhpxfm_Pj1JbG-jEAvFMXkfEauUqnXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246390809487:android:7b75e528151e5cfaf721fa",
+        "android_client_info": {
+          "package_name": "com.exemple.alifi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXhhpxfm_Pj1JbG-jEAvFMXkfEauUqnXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
