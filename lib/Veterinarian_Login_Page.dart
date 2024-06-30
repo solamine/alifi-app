@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'scanner_page.dart';
 import 'forgot_password_page.dart';
-import 'sign_up_veterinarian_page.dart'; // Import de la page d'inscription des vétérinaires
+import 'sign_up_veterinarian_page.dart';
 
 class VeterinarianLoginPage extends StatefulWidget {
   @override
@@ -12,6 +13,8 @@ class _VeterinarianLoginPageState extends State<VeterinarianLoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _stayLoggedIn = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -65,15 +68,45 @@ class _VeterinarianLoginPageState extends State<VeterinarianLoginPage> {
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: () {
-                print('Email: ${_emailController.text}');
-                print('Mot de passe: ${_passwordController.text}');
-                print('Rester connecté: $_stayLoggedIn');
-                // Logique de connexion ici
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => ScannerPage()),
-                );
+              onPressed: () async {
+                try {
+                  final UserCredential userCredential =
+                      await _auth.signInWithEmailAndPassword(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  );
+
+                  print(
+                      'Utilisateur connecté avec succès: ${userCredential.user!.uid}');
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => ScannerPage()),
+                  );
+                } on FirebaseAuthException catch (e) {
+                  String errorMessage;
+                  if (e.code == 'user-not-found') {
+                    errorMessage = 'Utilisateur non trouvé.';
+                  } else if (e.code == 'wrong-password') {
+                    errorMessage = 'Mot de passe incorrect.';
+                  } else {
+                    errorMessage = 'Erreur lors de la connexion: ${e.message}';
+                  }
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Erreur'),
+                      content: Text(errorMessage),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 0, 197, 171),

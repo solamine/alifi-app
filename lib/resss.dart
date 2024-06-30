@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Define Veterinarian class with only name
 class Veterinarian {
   final String name;
+  final String email;
 
   Veterinarian({
     required this.name,
+    required this.email,
   });
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
+class ReservationPage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _ReservationPageState createState() => _ReservationPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  List<Veterinarian> veterinarians = []; // List to hold veterinarians
+class _ReservationPageState extends State<ReservationPage> {
+  List<Veterinarian> veterinarians = [];
 
   @override
   void initState() {
@@ -26,19 +25,19 @@ class _HomePageState extends State<HomePage> {
     _loadVeterinarians();
   }
 
-  // Method to fetch veterinarians from Firestore
   Future<void> _loadVeterinarians() async {
     QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('veterinaire').get();
+        await FirebaseFirestore.instance.collection('veterinaires').get();
 
     List<Veterinarian> vets = snapshot.docs.map((doc) {
       return Veterinarian(
         name: doc['name'],
+        email: doc['email'],
       );
     }).toList();
 
     setState(() {
-      veterinarians = vets; // Assign loaded veterinarians to the list
+      veterinarians = vets;
     });
   }
 
@@ -46,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Veterinarians List'),
+        title: Text('Réservation'),
       ),
       body: ListView.builder(
         itemCount: veterinarians.length,
@@ -54,16 +53,10 @@ class _HomePageState extends State<HomePage> {
           Veterinarian vet = veterinarians[index];
           return ListTile(
             title: Text(vet.name),
+            subtitle: Text(vet.email),
           );
         },
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    title: 'Veterinarians App',
-    home: HomePage(),
-  ));
 }

@@ -1,9 +1,8 @@
-import 'package:alifi_application/reservation_page.dart';
+import 'package:alifi_application/map_page.dart';
+import 'package:alifi_application/veterinaireinterface/appointments.dart';
+import 'package:alifi_application/veterinaireinterface/patients.dart';
+import 'package:alifi_application/veterinaireinterface/profile.dart';
 import 'package:flutter/material.dart';
-import 'patients.dart';
-import 'profile.dart';
-import 'appointments.dart';
-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -156,7 +155,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   static List<Widget> _widgetOptions = <Widget>[
-    ReservationScreen(),
+    ReservationPage(),
     AppointmentsScreen(),
     PatientsScreen(),
     ProfileScreen(),

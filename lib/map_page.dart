@@ -16,7 +16,7 @@ class Veterinarian {
 }
 
 class ReservationPage extends StatefulWidget {
-  const ReservationPage({super.key});
+  const ReservationPage({Key? key}) : super(key: key);
 
   @override
   State<ReservationPage> createState() => _ReservationPageState();
@@ -24,12 +24,9 @@ class ReservationPage extends StatefulWidget {
 
 class _ReservationPageState extends State<ReservationPage> {
   osm.MapController controller = osm.MapController(
-    initPosition: osm.GeoPoint(latitude: 47.4358055, longitude: 8.4737324),
-    areaLimit: osm.BoundingBox(
-      east: 10.4922941,
-      north: 47.8084648,
-      south: 45.817995,
-      west: 5.9559113,
+    initPosition: osm.GeoPoint(
+      latitude: 35.555, // Adjust to your desired initial latitude
+      longitude: 7.258, // Adjust to your desired initial longitude
     ),
   );
 
@@ -55,23 +52,36 @@ class _ReservationPageState extends State<ReservationPage> {
 
   void addUserLocationMarker() async {
     osm.GeoPoint userLocation = await controller.myLocation();
-    controller.addMarker(userLocation,
-        markerIcon: osm.MarkerIcon(
-          icon: Icon(
-            Icons.location_on,
-            color: Colors.green,
-            size: 48,
-          ),
-        ));
+    controller.addMarker(
+      userLocation,
+      markerIcon: osm.MarkerIcon(
+        icon: Icon(
+          Icons.location_on,
+          color: Colors.green,
+          size: 48,
+        ),
+      ),
+    );
   }
 
   Future<void> loadVeterinarians() async {
-    List<Veterinarian> vets = await getVeterinarians();
+    // Load veterinarians from Firestore
+    List<Veterinarian> vetsFromFirestore = await getVeterinarians();
+
+    // Manually add a veterinarian
+    Veterinarian manualVeterinarian = Veterinarian(
+      name: 'ياسين', // Manually added veterinarian's name
+      latitude: 35.9, // Manually added latitude
+      longitude: 7.9, // Manually added longitude
+    );
+
     setState(() {
-      veterinarians = vets;
+      veterinarians = [...vetsFromFirestore, manualVeterinarian];
     });
+
+    // Add markers for all veterinarians
     for (var vet in veterinarians) {
-      controller.addMarker(
+      await controller.addMarker(
         osm.GeoPoint(latitude: vet.latitude, longitude: vet.longitude),
         markerIcon: osm.MarkerIcon(
           icon: Icon(
@@ -110,42 +120,8 @@ class _ReservationPageState extends State<ReservationPage> {
             child: osm.OSMFlutter(
               controller: controller,
               osmOption: osm.OSMOption(
-                userTrackingOption: const osm.UserTrackingOption(
-                  enableTracking: true,
-                  unFollowUser: false,
-                ),
-                zoomOption: const osm.ZoomOption(
-                  initZoom: 8,
-                  minZoomLevel: 3,
-                  maxZoomLevel: 19,
-                  stepZoom: 1.0,
-                ),
-                userLocationMarker: osm.UserLocationMaker(
-                  personMarker: const osm.MarkerIcon(
-                    icon: Icon(
-                      Icons.location_history_rounded,
-                      color: Colors.red,
-                      size: 48,
-                    ),
-                  ),
-                  directionArrowMarker: const osm.MarkerIcon(
-                    icon: Icon(
-                      Icons.double_arrow,
-                      size: 48,
-                    ),
-                  ),
-                ),
                 roadConfiguration: const osm.RoadOption(
                   roadColor: Colors.yellowAccent,
-                ),
-                markerOption: osm.MarkerOption(
-                  defaultMarker: const osm.MarkerIcon(
-                    icon: Icon(
-                      Icons.person_pin_circle,
-                      color: Colors.blue,
-                      size: 56,
-                    ),
-                  ),
                 ),
               ),
             ),
