@@ -27,7 +27,7 @@ class _ScannerPageState extends State<ScannerPage> {
 
   void _submit() {
     String address = addressController.text;
-    if (fileName != null && address.isNotEmpty) {
+    if (fileName != null ) {
       // Add logic here to submit the file and address to the server or perform other actions
       print('Adresse: $address');
       print('Nom du fichier: $fileName');
@@ -41,7 +41,7 @@ class _ScannerPageState extends State<ScannerPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
-                'Veuillez télécharger un document et saisir votre adresse.')),
+                'Veuillez télécharger un document')),
       );
     }
   }
@@ -88,15 +88,6 @@ class _ScannerPageState extends State<ScannerPage> {
                     ),
                   ],
                 ),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: addressController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Adresse',
-                hintText: 'Entrez votre adresse',
               ),
             ),
             SizedBox(height: 10),
